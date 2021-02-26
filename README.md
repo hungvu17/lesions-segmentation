@@ -4,52 +4,48 @@ Pytorch Implementation of Retinal Lesion Detection and Segmentation
 
 Using detectron2
 
-## I. Data processing
+## Prerequisites 
 
-Converting CTEH DR lesions dataset into trainable dataset adapting Detectron2.
+1. pycocotools: [Installation](https://github.com/cocodataset/cocoapi)
 
-### Prerequisites 
+2. Install packages*:
+```
+pip install -r requirments.txt
+```
+*Compatible with CUDA 10.1
 
-pycocotools: [Installation](https://github.com/cocodataset/cocoapi)
-
-### Procedures
-
-#### Data Structures
+## Data Structures
 
 ```
 .
 +-- images
-│		+-- <CTEH-xxxxx.jpg>
-│		+-- ...
+|   +-- <CTEH-xxxxx.jpg>
+|   +-- ...
 +-- lesions
-│		+-- hemorrhage
-│				+-- <CTEH-xxxxx.jpg>
-│				+-- ...
-│		+-- exudates
-│				├── <CTEH-xxxxx.jpg>
-│				├── ...
-│		+-- microaneurysms
-│				+-- <CTEH-xxxxx.jpg>
-│				+-- ...
-+-- preprocessing.ipynb
-+-- dr_lesion.ipynb
+|   +-- hemorrhage
+|   +-- <CTEH-xxxxx.jpg>
+|   +-- ...
+|   +-- exudates
+|   +-- <CTEH-xxxxx.jpg>
+|   +-- ...
+|   +--  microaneurysms
+|   +--  <CTEH-xxxxx.jpg>
+|   +--  ...
 +-- instances_default.json
 ```
 
-1. Install pycocotools for preprocessing script
+## Procedure
 
-2. Run **preprocessing.ipynb** to generate **train_set.json** and **val_set.json**
+1. Run **data_preprocessing** to generate **train_set.json** and **val_set.json**
 
+   **Script**:
+   python data_preprocessing --data path/to/data/folder --annotation path/to/annotation/file --output path/to/output/folder
+   
+   **Example**:
    ```
-   Input: instances_default.json
-   OutputL: train_set.json and val_set.json
+   python data_preprocessing --data ./data --annotation ./data/instances_default.json --output ./data
    ```
-
-3. Run **dr_lesions.ipynb** * to train and evaluate data from **train_set.json** and **val_set.json**
-
-   *If running **dr_lesions.ipynb** on Google Colab, please comply with the data structure described as above.
-
-
+   
 
 
 

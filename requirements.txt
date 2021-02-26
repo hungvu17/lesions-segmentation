@@ -1,0 +1,5 @@
+pyyaml==5.1
+torch==1.7.0
+torchvision==0.8.1
+opencv-python==4.1.2.30
+detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu101/torch1.7/index.html
