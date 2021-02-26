@@ -10,10 +10,12 @@ from detectron2.structures import BoxMode
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', help='diabetic retinopathy lesions folder', default='./data')
 parser.add_argument('--annotation', help='annotatation file', default='./data/instances_default.json')
+parser.add_argument('--output', help='output directory', default='./data')
 
 args = parser.parse_args()
 annotation_path = args.annotation
 data_path = args.data
+output = args.output
 
 def getAnnotations(id):
     '''
@@ -64,5 +66,5 @@ if __name__ == '__main__':
     for id, filename in tqdm(enumerate(filenames)):
         ann = getAnnotations(id+1)
         anns.append(ann)
-    with open('{}/annotations.json'.format(data_path), 'w') as annotations:
+    with open('{}/annotations.json'.format(output), 'w') as annotations:
         json.dump(anns, annotations)

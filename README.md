@@ -39,9 +39,10 @@ pip install -r requirments.txt
 1. Run **data_preprocessing** to generate **train_set.json** and **val_set.json**
 
    **Script**:
+   ```   
    python data_preprocessing --data path/to/data/folder --annotation path/to/annotation/file --output path/to/output/folder
-   
-   **Example**:
+   ```
+   **Default**:
    ```
    python data_preprocessing --data ./data --annotation ./data/instances_default.json --output ./data
    ```
