@@ -59,6 +59,9 @@ def getAnnotations(id):
     }
     return annotation
 
+def data_sampling(data):
+    return data[:160], data[160:]
+
 if __name__ == '__main__':
     filenames = [x for x in os.listdir('{}/images'.format(data_path)) if x[:4] == 'CTEH']
     anns = []
@@ -66,5 +69,11 @@ if __name__ == '__main__':
     for id, filename in tqdm(enumerate(filenames)):
         ann = getAnnotations(id+1)
         anns.append(ann)
+    
+    train_set, val_set = data_sampling(anns)
     with open('{}/annotations.json'.format(output), 'w') as annotations:
         json.dump(anns, annotations)
+    with open('{}/train.json'.format(output), 'w') as annotations:
+        json.dump(train_set, annotations)
+    with open('{}/val.json'.format(output), 'w') as annotations:
+        json.dump(val_set, annotations)
