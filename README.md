@@ -4,11 +4,14 @@ Pytorch Implementation of Retinal Lesion Detection and Segmentation
 
 Using detectron2
 
+
 ## Prerequisites 
 
-1. pycocotools: [Installation](https://github.com/cocodataset/cocoapi)
+1. CUDA 10.1
 
-2. Install packages*:
+2. pycocotools: [Installation](https://github.com/cocodataset/cocoapi)
+
+3. Install packages*:
 ```
 pip install -r requirments.txt
 ```

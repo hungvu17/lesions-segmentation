@@ -11,9 +11,8 @@ from detectron2.engine import DefaultTrainer
 
 from src.utils import Dataset
 
-dataset = Dataset()
-dataset.register('train')
-
+train_set = Dataset('train', './data/train.json')
+train_set.register()
 #config
 cfg = get_cfg()
 cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
