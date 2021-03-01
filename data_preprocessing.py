@@ -57,10 +57,14 @@ def getAnnotations(id):
     }
     return annotation
 
-def data_sampling(data):
-    return data[:160], data[160:]
-
 if __name__ == '__main__':
+    '''
+    Scan all images with 'CTEH-xxxxxx.jpg' format in directory and generate annotations file.
+    Input:
+        - data_path: lesions images directory
+        - annotation_path: raw annotation path
+        - output: output folder
+    '''
     coco = COCO(annotation_path)
     filenames = [x for x in os.listdir('{}/images'.format(data_path)) if x[:4] == 'CTEH']
     anns = []
@@ -68,11 +72,6 @@ if __name__ == '__main__':
     for id, filename in tqdm(enumerate(filenames)):
         ann = getAnnotations(id+1)
         anns.append(ann)
-    
-    train_set, test_set = data_sampling(anns)
+
     with open('{}/annotations.json'.format(output), 'w') as annotations:
         json.dump(anns, annotations)
-    with open('{}/train.json'.format(output), 'w') as annotations:
-        json.dump(train_set, annotations)
-    with open('{}/test.json'.format(output), 'w') as annotations:
-        json.dump(test_set, annotations)
