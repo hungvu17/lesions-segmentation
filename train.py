@@ -7,7 +7,8 @@ from detectron2.config import get_cfg
 from detectron2.engine import DefaultTrainer
 
 import numpy as np
-import os, json, cv2, argparse, configparser
+import os, json, cv2, argparse
+from configparser import ConfigParser
 from src.utils import Dataset
 
 parser = argparse.ArgumentParser()
