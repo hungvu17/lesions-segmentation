@@ -19,7 +19,7 @@ parser.add_argument('--output', help='output folder', default='./output')
 args = parser.parse_args()
 annotation_path = args.annotation
 data_path = args.data
-config_path = args.config
+config_path = args.params
 output = args.output
 
 params = ConfigParser()
