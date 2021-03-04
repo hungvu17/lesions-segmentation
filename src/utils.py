@@ -3,7 +3,6 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
-# from detectron2.data import MetadataCatalog, DatasetCatalog
 
 class Dataset:
     def __init__(self, name, annotation_path=None, data_path=None):
@@ -18,11 +17,6 @@ class Dataset:
         with open(self.annotation) as f:
             anns = json.load(f)
             return anns
-	
-#     def register(self):
-#         DatasetCatalog.register("dr_lesions_" + self.name, self.__get_dict)
-#         MetadataCatalog.get("dr_lesions_" + self.name).set(thing_classes=["hemorrhage", "exudate", "microaneurysms"])
-#         dr_lesions_metadata = MetadataCatalog.get("dr_lesions_" + self.name)
 
     def __bin_to_dec(self, stats):
         '''

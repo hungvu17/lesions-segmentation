@@ -2,38 +2,86 @@ import detectron2
 from detectron2.utils.logger import setup_logger
 setup_logger()
 
-import numpy as np
-import os, json, cv2
-
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
 from detectron2.engine import DefaultTrainer
 
+import numpy as np
+import os, json, cv2, argparse, configparser
 from src.utils import Dataset
 
-train_set = Dataset('train', './data/train.json')
+parser = argparse.ArgumentParser()
+parser.add_argument('--data', help='diabetic retinopathy lesions folder', default='./data')
+parser.add_argument('--annotation', help='annotation file', default='./data/annotations.json')
+parser.add_argument('--params', help='training params file', default='./params.ini')
+
+args = parser.parser_args()
+annotation_path = args.annotation
+data_path = args.data
+config_path = args.config
+output = args.output
+
+params = ConfigParser()
+params.read(config_path)
+
+# Sampling and registering dataset
+def config_detectron(params):
+    model = params['MODEL']
+    dataset = params['DATASET']
+    solver = params['SOLVER']
+    
+    cfg = get_cfg()
+    cfg.merge_from_file(model_zoo.get_config_file(model['name']))
+    cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(model['checkpoint_url'])
+    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = model['batch_size_per_image']
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = model['classes']
+    
+    cfg.DATASETS.TRAIN = (dataset['train_set'],)
+    cfg.DATASETS.TEST = ()
+    cfg.DATALOADER.NUM_WORKERS = dataset['workers']
+    
+    cfg.SOLVER.IMS_PER_BATCH = solver['ims_per_batch']
+    cfg.SOLVER.BASE_LR = solver['base_lr']
+    cfg.SOLVER.MAX_ITER = solver['iteration']   
+    cfg.SOLVER.STEPS = []
+    
+    return cfg
+
+def get_fold(index):
+    dataset = Dataset('dr_lesions', annotation_path, data_path)
+    folds = dataset.sampling()
+    return folds[index]
+
+    
+    MetadataCatalog.get("dr_lesions_" + self.name).set(thing_classes=["hemorrhage", "exudate", "microaneurysms"])
+    dr_lesions_metadata = MetadataCatalog.get("dr_lesions_" + self.name)
+train_set = Dataset('dr_lesions_train', './data/train.json')
 train_set.register()
-#config
-cfg = get_cfg()
-cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
-cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")  # Let training initialize from model zoo
-cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128   # faster, and good enough for this toy dataset (default: 512)
-cfg.MODEL.ROI_HEADS.NUM_CLASSES = 3  # (see https://detectron2.readthedocs.io/tutorials/datasets.html#update-the-config-for-new-datasets)
 
-cfg.DATASETS.TRAIN = ("dr_lesions_train",)
-cfg.DATASETS.TEST = ()
+if __name__ == '__main__':
+    '''
+    Train scripts
+    Input:
+        - annotation: preprocessed annotation files
+        - data: data folder
+        - config: training config
+        - output: output folder
+    '''
+    # Setup Colab 
+    os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+    os.makedirs(output, exist_ok=True)
+    
+    # Load data fold
+    train_set, _ = get_fold(0)
+    
+    # Register dataset to detectron2
+    DatasetCatalog.register('dr_lesions_train', lambda d=d: train_set)
+    
+    # Load detectron config
+    config = config_detectron(params)
+    
+    # Train program
+    trainer = DefaultTrainer(config) 
+    trainer.resume_or_load(resume=False)
+    trainer.train()
 
-cfg.DATALOADER.NUM_WORKERS = 2
-
-cfg.SOLVER.IMS_PER_BATCH = 2
-cfg.SOLVER.BASE_LR = 0.001  # pick a good LR
-cfg.SOLVER.MAX_ITER = 300    # 300 iterations seems good enough for this toy dataset; you will need to train longer for a practical dataset
-cfg.SOLVER.STEPS = []        # do not decay learning rate
-
-# NOTE: this config means the number of classes, but a few popular unofficial tutorials incorrect uses num_classes+1 here.
-os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
-os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
-
-trainer = DefaultTrainer(cfg) 
-trainer.resume_or_load(resume=False)
-trainer.train()
