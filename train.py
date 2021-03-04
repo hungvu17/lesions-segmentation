@@ -14,8 +14,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--data', help='diabetic retinopathy lesions folder', default='./data')
 parser.add_argument('--annotation', help='annotation file', default='./data/annotations.json')
 parser.add_argument('--params', help='training params file', default='./params.ini')
+parser.add_argument('--output', help='output folder', default='./output')
 
-args = parser.parser_args()
+args = parser.parse_args()
 annotation_path = args.annotation
 data_path = args.data
 config_path = args.config
@@ -52,11 +53,6 @@ def get_fold(index):
     folds = dataset.sampling()
     return folds[index]
 
-    
-    MetadataCatalog.get("dr_lesions_" + self.name).set(thing_classes=["hemorrhage", "exudate", "microaneurysms"])
-    dr_lesions_metadata = MetadataCatalog.get("dr_lesions_" + self.name)
-train_set = Dataset('dr_lesions_train', './data/train.json')
-train_set.register()
 
 if __name__ == '__main__':
     '''
@@ -76,6 +72,8 @@ if __name__ == '__main__':
     
     # Register dataset to detectron2
     DatasetCatalog.register('dr_lesions_train', lambda d=d: train_set)
+    MetadataCatalog.get('dr_lesions_train').set(thing_classes=["hemorrhage", "exudate", "microaneurysms"])
+    dr_lesions_metadata = MetadataCatalog.get('dr_lesions_train')
     
     # Load detectron config
     config = config_detectron(params)
