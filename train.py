@@ -9,13 +9,12 @@ from detectron2.data import DatasetCatalog, MetadataCatalog
 
 import numpy as np
 import os, json, cv2, argparse
-from configparser import ConfigParser
 from src.utils import Dataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', help='diabetic retinopathy lesions folder', default='./data')
 parser.add_argument('--annotation', help='annotation file', default='./data/annotations.json')
-parser.add_argument('--config', help='training config file', default='./config.ini')
+parser.add_argument('--config', help='training config file', default='./experiment/exp_1.json')
 parser.add_argument('--output', help='output folder', default='./output')
 
 args = parser.parse_args()
@@ -24,14 +23,12 @@ data_path = args.data
 config_path = args.config
 output = args.output
 
-config = ConfigParser()
-config.read(config_path)
+config = json.load(config_path)
 
-# Sampling and registering dataset
 def config_detectron(params):
-    model = params['MODEL']
-    dataset = params['DATASET']
-    solver = params['SOLVER']
+    model = params['model']
+    dataset = params['dataset']
+    solver = params['solver']
     
     cfg = get_cfg()
     cfg.merge_from_file(model_zoo.get_config_file(model['name']))
@@ -50,10 +47,6 @@ def config_detectron(params):
     
     return cfg
 
-def get_fold(index):
-
-    return folds[index]
-
 
 if __name__ == '__main__':
     '''
@@ -68,12 +61,13 @@ if __name__ == '__main__':
     os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
     os.makedirs(output, exist_ok=True)
     
-    # Load data fold
-    train_set, _ = get_fold(0)
+    # Load data fold 
+    dataset = Dataset('dr_lesions', annotation_path, data_path)
+    train_set, _ = dataset.sampling()[0]
     
     # Register dataset to detectron2
-    DatasetCatalog.register('dr_lesions_train', lambda d=d: train_set)
-    MetadataCatalog.get('dr_lesions_train').set(thing_classes=["hemorrhage", "exudate", "microaneurysms"])
+    DatasetCatalog.register('dr_lesions_train', lambda : train_set)
+    MetadataCatalog.get('dr_lesions_train').set(thing_classes=config['dataset']['classes'])
     dr_lesions_metadata = MetadataCatalog.get('dr_lesions_train')
     
     # Load detectron config
