@@ -35,7 +35,7 @@ def config_detectron(params):
     cfg.merge_from_file(model_zoo.get_config_file(model['name']))
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(model['checkpoint_url'])
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = model['batch_size_per_image']
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = model['classes']
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = model['number_of_classes']
     
     cfg.DATASETS.TRAIN = (dataset['train_set'],)
     cfg.DATASETS.TEST = ()
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     
     # Register dataset to detectron2
     DatasetCatalog.register('dr_lesions_train', lambda : train_set)
-    MetadataCatalog.get('dr_lesions_train').set(thing_classes=config['dataset']['classes'])
+    MetadataCatalog.get('dr_lesions_train').set(thing_classes=config['model']['classes'])
     dr_lesions_metadata = MetadataCatalog.get('dr_lesions_train')
     
     # Load detectron config

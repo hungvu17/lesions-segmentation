@@ -73,6 +73,7 @@ class Dataset:
         annotations = self.__get_dict()
         for idx, image in enumerate(annotations):
             lesions = image['annotations']
+            image['file_name'] = os.path.join(self.data_path, 'images', image['file_name'].split('/')[-1])
             for lesion in lesions:
                 lesions_count[idx, lesion['category_id']] += 1
                 
