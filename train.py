@@ -23,7 +23,8 @@ data_path = args.data
 config_path = args.config
 output = args.output
 
-config = json.load(config_path)
+with open(config_path) as config_file:
+    config = json.load(config_file)
 
 def config_detectron(params):
     model = params['model']
